@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Face Scanner - Thống Kê & Báo Cáo</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* Shared Premium Neon-Cyan SaaS Theme Colors */
+        :root {
+            --bg-dark: #06040d;
+            --bg-panel: rgba(14, 11, 26, 0.65);
+            --bg-panel-hover: rgba(22, 17, 40, 0.85);
+            --accent-cyan: #00f2fe;
+            --accent-cyan-glow: rgba(0, 242, 254, 0.35);
+            --accent-magenta: #fe0979;
+            --accent-purple: #7f00ff;
+            --accent-blue: #0072ff;
+            --text-primary: #f5f6fa;
+            --text-secondary: #a8aed0;
+            --text-muted: #62688f;
+            --success: #00e676;
+            --warning: #ff9100;
+            --danger: #ff1744;
+            --border-glass: rgba(255, 255, 255, 0.06);
+            --border-cyan: rgba(0, 242, 254, 0.15);
+            --font-sans: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 5% 15%, rgba(127, 0, 255, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 95% 85%, rgba(0, 242, 254, 0.15) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        /* App Shell Layout */
+        .app-container { display: flex; min-height: 100vh; }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px; background: rgba(6, 4, 13, 0.9); border-right: 1px solid var(--border-glass);
+            padding: 2.2rem 1.25rem; display: flex; flex-direction: column; justify-content: space-between;
+            flex-shrink: 0; backdrop-filter: blur(20px); z-index: 100;
+        }
+        .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 3rem; padding-left: 8px; }
+        .logo-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: white;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+        .logo-text h2 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; }
+        .logo-text h2 span { background: linear-gradient(to right, var(--accent-cyan), var(--accent-magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-text p { font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono); }
+        
+        .nav-menu { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+        .nav-item {
+            background: none; border: none; padding: 12px 16px; border-radius: 12px;
+            color: var(--text-secondary); display: flex; align-items: center; gap: 14px;
+            cursor: pointer; font-size: 0.92rem; font-weight: 500; text-align: left;
+            transition: var(--transition-smooth); width: 100%;
+        }
+        .nav-item i { font-size: 1.1rem; width: 20px; text-align: center; }
+        .nav-item:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.03); transform: translateX(3px); }
+        .nav-item.active {
+            color: var(--accent-cyan); background: rgba(0, 242, 254, 0.06);
+            border: 1px solid rgba(0, 242, 254, 0.12); box-shadow: inset 0 0 10px rgba(0, 242, 254, 0.02);
+        }
+        .nav-item.active i { text-shadow: 0 0 8px var(--accent-cyan-glow); }
+        
+        /* User profile block at bottom of sidebar */
+        .sidebar-footer { padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.04); display: flex; flex-direction: column; gap: 12px; }
+        .sidebar-profile { display: flex; align-items: center; gap: 12px; padding: 6px; border-radius: 10px; transition: var(--transition-smooth); }
+        .profile-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-purple), var(--accent-magenta)); border: 1.5px solid var(--border-glass); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 0.9rem; }
+        .profile-info { flex-grow: 1; }
+        .profile-info h5 { font-size: 0.85rem; font-weight: 600; color: #fff; }
+        .profile-info p { font-size: 0.72rem; color: var(--text-muted); }
+        
+        .db-status-container { background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); border-radius: 10px; padding: 10px 14px; }
+        .status-indicator { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; font-weight: 500; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: var(--text-muted); }
+        .status-indicator.postgres .status-dot { background-color: var(--success); box-shadow: 0 0 8px var(--success); }
+        .status-indicator.fallback .status-dot { background-color: var(--warning); box-shadow: 0 0 8px var(--warning); }
+        .status-indicator.error .status-dot { background-color: var(--danger); box-shadow: 0 0 8px var(--danger); }
+        .status-text { color: var(--text-secondary); font-family: var(--font-mono); }
+        .pulsing { animation: status-pulse 1.8s infinite ease-in-out; }
+        @keyframes status-pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+        /* Main Content Container */
+        .main-content { flex-grow: 1; padding: 2.2rem 2.8rem; overflow-y: auto; max-height: 100vh; display: flex; flex-direction: column; gap: 1.8rem; }
+        
+        /* Top Navigation Header bar */
+        .app-header { display: flex; justify-content: space-between; align-items: center; }
+        .header-title h1 {
+            font-size: 1.85rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px;
+            background: linear-gradient(120deg, var(--text-primary) 50%, var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .header-title p { color: var(--text-secondary); font-size: 0.88rem; }
+        
+        /* Quick System Action tools */
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .action-circle-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-glass); background: rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); cursor: pointer; transition: var(--transition-smooth); }
+        .action-circle-btn:hover { background: rgba(255,255,255,0.06); color: var(--accent-cyan); border-color: rgba(0, 242, 254, 0.2); }
+        .action-badge { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-magenta); box-shadow: 0 0 6px var(--accent-magenta); }
+
+        /* Top SaaS Cards Summary Row */
+        .saas-metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .metric-card { padding: 1.4rem; display: flex; align-items: center; gap: 1.25rem; }
+        .metric-card-icon {
+            width: 50px; height: 50px; border-radius: 12px; background: rgba(0, 242, 254, 0.05);
+            display: flex; align-items: center; justify-content: center; font-size: 1.35rem; color: var(--accent-cyan);
+            border: 1px solid rgba(0, 242, 254, 0.1);
+        }
+        .metric-card:nth-child(2) .metric-card-icon { background: rgba(254, 9, 121, 0.05); color: var(--accent-magenta); border-color: rgba(254, 9, 121, 0.1); }
+        .metric-card:nth-child(3) .metric-card-icon { background: rgba(0, 230, 118, 0.05); color: var(--success); border-color: rgba(0, 230, 118, 0.1); }
+        .metric-card-data h4 { font-size: 1.45rem; font-weight: 800; font-family: var(--font-mono); color: #fff; margin-bottom: 2px; }
+        .metric-card-data p { font-size: 0.8rem; color: var(--text-secondary); font-weight: 500; }
+
+        /* Frosted Panels */
+        .glass-panel {
+            background: var(--bg-panel); border: 1px solid var(--border-glass); border-radius: 18px;
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); transition: var(--transition-smooth);
+        }
+        .glass-panel.cyan-highlight { border-color: var(--border-cyan); }
+        .glass-panel:hover { border-color: rgba(0, 242, 254, 0.2); }
+
+        /* Analytics Specific Panels */
+        .analytics-charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.8rem; }
+        .chart-container { padding: 1.6rem 1.8rem; display: flex; flex-direction: column; }
+        .chart-container h4 { font-size: 0.88rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 1.5rem; color: var(--accent-cyan); display: flex; align-items: center; gap: 10px; }
+        .chart-container h4 i { text-shadow: 0 0 8px var(--accent-cyan-glow); }
+        .chart-wrapper { position: relative; height: 280px; width: 100%; }
+        .chart-container.full-width { grid-column: span 2; }
+        .chart-container.full-width .chart-wrapper { height: 320px; }
+
+        @media (max-width: 1200px) {
+            .analytics-charts-grid { grid-template-columns: 1fr; }
+            .chart-container.full-width { grid-column: span 1; }
+        }
+
+        @media (max-width: 900px) {
+            .app-container { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-glass); padding: 1.5rem; }
+            .logo-area { margin-bottom: 1.5rem; }
+            .nav-menu { flex-direction: row; flex-wrap: wrap; }
+            .sidebar-footer { display: none; }
+            .main-content { padding: 1.5rem; }
+            .saas-metrics-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fa-solid fa-brain-circuit"></i></div>
+                <div class="logo-text">
+                    <h2>Face<span>Scan.AI</span></h2>
+                    <p>AI Engine v3.0.0</p>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item" onclick="window.location.href='/scanner'">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Bảng Điều Khiển</span>
+                </button>
+                <button class="nav-item" onclick="window.location.href='/history'">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Lịch Sử Quét</span>
+                </button>
+                <button class="nav-item active" onclick="window.location.href='/analytics'">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Báo Cáo Thống Kê</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="sidebar-profile">
+                    <div class="profile-avatar">QA</div>
+                    <div class="profile-info">
+                        <h5>Sam Administrator</h5>
+                        <p>Enterprise Account</p>
+                    </div>
+                </div>
+                <div class="db-status-container">
+                    <div class="status-indicator" id="db-indicator">
+                        <span class="status-dot pulsing"></span>
+                        <span class="status-text">Connecting...</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header bar -->
+            <header class="app-header">
+                <div class="header-title">
+                    <h1>Thống Kê & Báo Cáo</h1>
+                    <p>Hệ thống biểu đồ trực quan hóa dữ liệu độ tuổi, cảm xúc trắc học và chất lượng quét của tập dữ liệu Face AI</p>
+                </div>
+                <div class="header-actions">
+                    <button class="action-circle-btn"><i class="fa-solid fa-bell"></i><span class="action-badge"></span></button>
+                    <button class="action-circle-btn"><i class="fa-solid fa-gear"></i></button>
+                </div>
+            </header>
+
+            <section class="tab-content" style="display: flex; flex-direction: column; gap: 1.8rem;">
+                <!-- Summary aggregates cards -->
+                <div class="saas-metrics-row">
+                    <div class="glass-panel metric-card cyan-highlight">
+                        <div class="metric-card-icon"><i class="fa-solid fa-users-viewfinder"></i></div>
+                        <div class="metric-card-data">
+                            <h4 id="stat-total-scans">0</h4>
+                            <p>Tổng Số Lượt Quét</p>
+                        </div>
+                    </div>
+                    <div class="glass-panel metric-card cyan-highlight">
+                        <div class="metric-card-icon"><i class="fa-solid fa-star-of-david"></i></div>
+                        <div class="metric-card-data">
+                            <h4 id="stat-avg-quality">0%</h4>
+                            <p>Chất Lượng Trung Bình</p>
+                        </div>
+                    </div>
+                    <div class="glass-panel metric-card cyan-highlight">
+                        <div class="metric-card-icon" style="background: rgba(254, 9, 121, 0.05); color: var(--accent-magenta); border-color: rgba(254, 9, 121, 0.1);"><i class="fa-solid fa-star"></i></div>
+                        <div class="metric-card-data">
+                            <h4 id="stat-avg-face-score">0.0/10</h4>
+                            <p>Điểm Số Khuôn Mặt TB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts grid -->
+                <div class="analytics-charts-grid">
+                    <div class="glass-panel chart-container cyan-highlight">
+                        <h4><i class="fa-solid fa-circle-notch"></i> Phân Bổ Cảm Xúc Chủ Đạo</h4>
+                        <div class="chart-wrapper">
+                            <canvas id="chart-emotions"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-panel chart-container cyan-highlight">
+                        <h4><i class="fa-solid fa-chart-simple"></i> Phân Bổ Điểm Số Khuôn Mặt</h4>
+                        <div class="chart-wrapper">
+                            <canvas id="chart-face-scores"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel chart-container full-width cyan-highlight">
+                        <h4><i class="fa-solid fa-chart-line"></i> Biến Thiên Chất Lượng & Điểm Số Gần Đây</h4>
+                        <div class="chart-wrapper">
+                            <canvas id="chart-quality-trend"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Check if opened as local file (CORS fallback) or served from backend (relative links)
+        const API_BASE = (window.location.protocol === 'file:') ? 'http://127.0.0.1:8000' : '';
+        let emotionChart = null;
+        let ageChart = null;
+        let qualityTrendChart = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkDatabaseStatus();
+            loadAnalytics();
+        });
+
+        // DB indicator monitor
+        async function checkDatabaseStatus() {
+            const dbIndicator = document.getElementById('db-indicator');
+            try {
+                const response = await fetch(`${API_BASE}/api/db-status`);
+                if (!response.ok) throw new Error("Offline");
+                const data = await response.json();
+                dbIndicator.className = 'status-indicator';
+                
+                if (data.status === 'PostgreSQL') {
+                    dbIndicator.classList.add('postgres');
+                    dbIndicator.querySelector('.status-dot').className = 'status-dot';
+                    dbIndicator.querySelector('.status-text').textContent = 'PostgreSQL Online';
+                } else {
+                    dbIndicator.classList.add('fallback');
+                    dbIndicator.querySelector('.status-dot').className = 'status-dot pulsing';
+                    dbIndicator.querySelector('.status-text').textContent = 'SQLite Fallback';
+                }
+            } catch (e) {
+                dbIndicator.className = 'status-indicator error';
+                dbIndicator.querySelector('.status-dot').className = 'status-dot pulsing';
+                dbIndicator.querySelector('.status-text').textContent = 'Database Offline';
+            }
+        }
+
+        // Fetch Aggregates
+        async function loadAnalytics() {
+            try {
+                const response = await fetch(`${API_BASE}/api/analytics`);
+                if (!response.ok) throw new Error("Load failed");
+                const data = await response.json();
+
+                // Counters
+                document.getElementById('stat-total-scans').textContent = data.total_scans;
+                document.getElementById('stat-avg-quality').textContent = `${Math.round(data.average_quality)}%`;
+                
+                const avgScore = data.average_face_score ? data.average_face_score.toFixed(1) : "0.0";
+                document.getElementById('stat-avg-face-score').textContent = `${avgScore}/10`;
+
+                renderCharts(data);
+            } catch (e) {
+                console.error("Analytics rendering failed", e);
+            }
+        }
+
+        function renderCharts(data) {
+            const outfitFont = { family: 'Outfit', size: 12 };
+            
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#a8aed0', font: outfitFont } }
+                },
+                scales: {
+                    x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#a8aed0', font: outfitFont } },
+                    y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#a8aed0', font: outfitFont } }
+                }
+            };
+
+            // 1. Emotion distribution doughnut chart
+            if (emotionChart) emotionChart.destroy();
+            const emotionCanvas = document.getElementById('chart-emotions');
+            
+            const rawLabels = Object.keys(data.emotion_distribution);
+            const emotionValues = Object.values(data.emotion_distribution);
+            
+            const vnEmotions = {
+                "Happy": "Vui vẻ",
+                "Sad": "Buồn bã",
+                "Neutral": "Bình thường",
+                "Surprise": "Ngạc nhiên",
+                "Angry": "Tức giận",
+                "Fear": "Lo sợ"
+            };
+            const emotionLabels = rawLabels.map(l => vnEmotions[l] || l);
+
+            emotionChart = new Chart(emotionCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: emotionLabels,
+                    datasets: [{
+                        data: emotionValues,
+                        backgroundColor: ['#00e676', '#0072ff', '#a8aed0', '#ff9100', '#ff1744', '#7f00ff'],
+                        borderColor: '#06040d',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: '#a8aed0', font: outfitFont } }
+                    }
+                }
+            });
+
+            // 2. Face score distribution bar chart
+            if (ageChart) ageChart.destroy();
+            const ageCanvas = document.getElementById('chart-face-scores');
+            const ageCtx = ageCanvas.getContext('2d');
+            
+            // Create nice gradient for score group bars
+            const scoreGradient = ageCtx.createLinearGradient(0, 0, 0, 260);
+            scoreGradient.addColorStop(0, 'rgba(0, 242, 254, 0.8)');
+            scoreGradient.addColorStop(1, 'rgba(127, 0, 255, 0.15)');
+
+            const scoreLabels = Object.keys(data.face_score_groups);
+            const scoreValues = Object.values(data.face_score_groups);
+            
+            ageChart = new Chart(ageCanvas, {
+                type: 'bar',
+                data: {
+                    labels: scoreLabels,
+                    datasets: [{
+                        label: 'Số Lượt Quét',
+                        data: scoreValues,
+                        backgroundColor: scoreGradient,
+                        borderColor: 'var(--accent-cyan)',
+                        borderWidth: 1.5,
+                        borderRadius: 6,
+                        hoverBackgroundColor: 'rgba(0, 242, 254, 0.65)'
+                    }]
+                },
+                options: chartOptions
+            });
+
+            // 3. Dual lines quality & face score trend chart
+            if (qualityTrendChart) qualityTrendChart.destroy();
+            const trendCanvas = document.getElementById('chart-quality-trend');
+            const trendCtx = trendCanvas.getContext('2d');
+            
+            // Create nice gradient for quality line fill
+            const fillGradient = trendCtx.createLinearGradient(0, 0, 0, 280);
+            fillGradient.addColorStop(0, 'rgba(0, 242, 254, 0.25)');
+            fillGradient.addColorStop(1, 'rgba(0, 242, 254, 0)');
+
+            const dates = data.quality_trend.map(t => t.date);
+            const qualityScores = data.quality_trend.map(t => t.score);
+            const faceScores = data.quality_trend.map(t => t.face_score ? parseFloat(t.face_score) : 0.0);
+
+            qualityTrendChart = new Chart(trendCanvas, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: 'Chất Lượng Quét (%)',
+                            data: qualityScores,
+                            fill: true,
+                            backgroundColor: fillGradient,
+                            borderColor: 'var(--accent-cyan)',
+                            borderWidth: 3,
+                            tension: 0.35,
+                            pointBackgroundColor: 'var(--accent-cyan)',
+                            pointBorderColor: 'rgba(255,255,255,0.8)',
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Điểm Số Khuôn Mặt',
+                            data: faceScores,
+                            fill: false,
+                            borderColor: 'var(--accent-magenta)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.2,
+                            pointBackgroundColor: 'var(--accent-magenta)',
+                            pointBorderColor: 'rgba(255,255,255,0.8)',
+                            pointRadius: 3,
+                            pointHoverRadius: 5,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#a8aed0', font: outfitFont } }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#a8aed0', font: outfitFont } },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Chất Lượng (%)', color: 'var(--accent-cyan)', font: outfitFont },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#a8aed0', font: outfitFont }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Điểm Số AI (/10)', color: 'var(--accent-magenta)', font: outfitFont },
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: '#a8aed0', font: outfitFont },
+                            min: 0,
+                            max: 10
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+Advanced Facial Features & Object Detection Report:
+
+==========================================
+IMAGE: 4bb01edb-2207-4ffb-baf7-d3cb80740184.jpg (1920x2560 px)
+Total Faces Detected: 3
+
+--- Face 1 ---
+  Position: x=1606, y=2273, w=134, h=134
+  Clarity level: Blurry/Low Clarity (Laplacian var: 8.2)
+  Eyes detected inside face box: 0
+  Estimated pose: Frontal or slight angle (No eyes detected)
+  Glasses detection: Not Wearing Glasses (Khong kinh) (Edge density: 0.000)
+  Mask detection: No Mask Detected (Khong khau trang) (Luminance variance: 223.6, mean BGR: [79.7, 78.6, 80.4])
+
+--- Face 2 ---
+  Position: x=207, y=459, w=571, h=571
+  Clarity level: High Clarity (Laplacian var: 360.6)
+  Eyes detected inside face box: 8
+  Estimated pose: Frontal Pose (Thang)
+  Glasses detection: Not Wearing Glasses (Khong kinh) (Edge density: 0.035)
+  Mask detection: No Mask Detected (Khong khau trang) (Luminance variance: 2863.4, mean BGR: [86.0, 102.0, 126.0])
+
+--- Face 3 ---
+  Position: x=1042, y=1476, w=174, h=174
+  Clarity level: Moderate Clarity (Laplacian var: 60.0)
+  Eyes detected inside face box: 0
+  Estimated pose: Frontal or slight angle (No eyes detected)
+  Glasses detection: Not Wearing Glasses (Khong kinh) (Edge density: 0.024)
+  Mask detection: No Mask Detected (Khong khau trang) (Luminance variance: 4698.8, mean BGR: [60.7, 68.2, 80.1])
+
+==========================================
+IMAGE: 5436caa6-5655-406d-b88e-d43e7e405caa.jpg (1280x960 px)
+Total Faces Detected: 1
+
+--- Face 1 ---
+  Position: x=465, y=681, w=54, h=54
+  Clarity level: High Clarity (Laplacian var: 2477.2)
+  Eyes detected inside face box: 0
+  Estimated pose: Frontal or slight angle (No eyes detected)
+  Glasses detection: Likely Wearing Glasses (Co kinh) (Edge density: 0.285)
+  Mask detection: No Mask Detected (Khong khau trang) (Luminance variance: 2254.5, mean BGR: [111.4, 145.2, 201.7])
+
+==========================================
+IMAGE: a71a2b00-1186-4548-b593-a366c3576f3c.jpg (189x192 px)
+Total Faces Detected: 1
+
+--- Face 1 ---
+  Position: x=52, y=32, w=84, h=84
+  Clarity level: Good Clarity (Laplacian var: 203.8)
+  Eyes detected inside face box: 2
+  Estimated pose: Frontal Pose (Thang)
+  Glasses detection: Likely Wearing Glasses (Co kinh) (Edge density: 0.119)
+  Mask detection: No Mask Detected (Khong khau trang) (Luminance variance: 1498.3, mean BGR: [186.4, 198.2, 221.8])

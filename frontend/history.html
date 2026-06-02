@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Face Scanner - Professional SaaS History</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Shared Premium Neon-Cyan SaaS Theme Colors */
+        :root {
+            --bg-dark: #06040d;
+            --bg-panel: rgba(14, 11, 26, 0.65);
+            --bg-panel-hover: rgba(22, 17, 40, 0.85);
+            --accent-cyan: #00f2fe;
+            --accent-cyan-glow: rgba(0, 242, 254, 0.35);
+            --accent-magenta: #fe0979;
+            --accent-purple: #7f00ff;
+            --accent-blue: #0072ff;
+            --text-primary: #f5f6fa;
+            --text-secondary: #a8aed0;
+            --text-muted: #62688f;
+            --success: #00e676;
+            --warning: #ff9100;
+            --danger: #ff1744;
+            --border-glass: rgba(255, 255, 255, 0.06);
+            --border-cyan: rgba(0, 242, 254, 0.15);
+            --font-sans: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 5% 15%, rgba(127, 0, 255, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 95% 85%, rgba(0, 242, 254, 0.15) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        /* App Shell Layout */
+        .app-container { display: flex; min-height: 100vh; }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px; background: rgba(6, 4, 13, 0.9); border-right: 1px solid var(--border-glass);
+            padding: 2.2rem 1.25rem; display: flex; flex-direction: column; justify-content: space-between;
+            flex-shrink: 0; backdrop-filter: blur(20px); z-index: 100;
+        }
+        .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 3rem; padding-left: 8px; }
+        .logo-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: white;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+        .logo-text h2 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; }
+        .logo-text h2 span { background: linear-gradient(to right, var(--accent-cyan), var(--accent-magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-text p { font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono); }
+        
+        .nav-menu { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+        .nav-item {
+            background: none; border: none; padding: 12px 16px; border-radius: 12px;
+            color: var(--text-secondary); display: flex; align-items: center; gap: 14px;
+            cursor: pointer; font-size: 0.92rem; font-weight: 500; text-align: left;
+            transition: var(--transition-smooth); width: 100%;
+        }
+        .nav-item i { font-size: 1.1rem; width: 20px; text-align: center; }
+        .nav-item:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.03); transform: translateX(3px); }
+        .nav-item.active {
+            color: var(--accent-cyan); background: rgba(0, 242, 254, 0.06);
+            border: 1px solid rgba(0, 242, 254, 0.12); box-shadow: inset 0 0 10px rgba(0, 242, 254, 0.02);
+        }
+        .nav-item.active i { text-shadow: 0 0 8px var(--accent-cyan-glow); }
+        
+        /* User profile block at bottom of sidebar */
+        .sidebar-footer { padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.04); display: flex; flex-direction: column; gap: 12px; }
+        .sidebar-profile { display: flex; align-items: center; gap: 12px; padding: 6px; border-radius: 10px; transition: var(--transition-smooth); }
+        .profile-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-purple), var(--accent-magenta)); border: 1.5px solid var(--border-glass); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 0.9rem; }
+        .profile-info { flex-grow: 1; }
+        .profile-info h5 { font-size: 0.85rem; font-weight: 600; color: #fff; }
+        .profile-info p { font-size: 0.72rem; color: var(--text-muted); }
+        
+        .db-status-container { background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); border-radius: 10px; padding: 10px 14px; }
+        .status-indicator { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; font-weight: 500; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: var(--text-muted); }
+        .status-indicator.postgres .status-dot { background-color: var(--success); box-shadow: 0 0 8px var(--success); }
+        .status-indicator.fallback .status-dot { background-color: var(--warning); box-shadow: 0 0 8px var(--warning); }
+        .status-indicator.error .status-dot { background-color: var(--danger); box-shadow: 0 0 8px var(--danger); }
+        .status-text { color: var(--text-secondary); font-family: var(--font-mono); }
+        .pulsing { animation: status-pulse 1.8s infinite ease-in-out; }
+        @keyframes status-pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+        /* Main Content Container */
+        .main-content { flex-grow: 1; padding: 2.2rem 2.8rem; overflow-y: auto; max-height: 100vh; display: flex; flex-direction: column; gap: 1.8rem; }
+        
+        /* Top Navigation Header bar */
+        .app-header { display: flex; justify-content: space-between; align-items: center; }
+        .header-title h1 {
+            font-size: 1.85rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px;
+            background: linear-gradient(120deg, var(--text-primary) 50%, var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .header-title p { color: var(--text-secondary); font-size: 0.88rem; }
+        
+        /* Quick System Action tools */
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .action-circle-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-glass); background: rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); cursor: pointer; transition: var(--transition-smooth); }
+        .action-circle-btn:hover { background: rgba(255,255,255,0.06); color: var(--accent-cyan); border-color: rgba(0, 242, 254, 0.2); }
+        .action-badge { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-magenta); box-shadow: 0 0 6px var(--accent-magenta); }
+
+        /* Panels & Buttons */
+        .btn-icon-only { background: none; border: none; color: var(--text-secondary); font-size: 1.15rem; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; transition: var(--transition-smooth); }
+        .btn-icon-only:hover { background: rgba(255, 255, 255, 0.05); color: var(--accent-cyan); }
+        .text-accent { color: var(--accent-cyan) !important; }
+        .text-accent:hover { background: rgba(0, 242, 254, 0.08) !important; }
+        .text-danger { color: var(--danger) !important; }
+        .text-danger:hover { background: rgba(255, 23, 68, 0.1) !important; }
+
+        .glass-panel {
+            background: var(--bg-panel); border: 1px solid var(--border-glass); border-radius: 20px;
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); transition: var(--transition-smooth);
+        }
+        .glass-panel.cyan-highlight { border-color: var(--border-cyan); }
+        .glass-panel:hover { border-color: rgba(0, 242, 254, 0.25); }
+
+        /* History Module Specifics */
+        .history-panel { overflow: hidden; }
+        .panel-header-search { padding: 1.8rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
+        .panel-header-search h3 { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 10px; color: var(--accent-cyan); }
+        .panel-header-search h3 i { text-shadow: 0 0 10px var(--accent-cyan-glow); }
+        
+        .search-box { position: relative; width: 320px; }
+        .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; }
+        .search-box input {
+            width: 100%; padding: 10px 14px 10px 40px; background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-glass); border-radius: 10px; color: var(--text-primary);
+            font-size: 0.88rem; outline: none; transition: var(--transition-smooth);
+        }
+        .search-box input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 242, 254, 0.1); }
+
+        .history-table-container { padding: 0; max-height: 600px; overflow-y: auto; }
+        .history-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .history-table th, .history-table td { padding: 16px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+        .history-table th { background: rgba(255, 255, 255, 0.01); font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.5px; }
+        .history-table tr:hover td { background: rgba(255, 255, 255, 0.015); }
+        
+        .history-thumb { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--border-glass); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .history-filename { font-weight: 600; font-size: 0.9rem; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff; }
+        .history-date { font-size: 0.8rem; color: var(--text-secondary); font-family: var(--font-mono); }
+        .history-age { font-family: var(--font-mono); font-weight: 700; color: #fff; }
+        
+        /* Skin swatch pill */
+        .skin-pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; }
+        .skin-swatch-circle { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); }
+
+        /* Badges */
+        .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; font-family: var(--font-mono); }
+        .badge-neutral { background: rgba(160, 165, 192, 0.12); color: var(--text-secondary); border: 1px solid rgba(160, 165, 192, 0.2); }
+        .badge-happy { background: rgba(0, 230, 118, 0.12); color: var(--success); border: 1px solid rgba(0, 230, 118, 0.2); }
+        .badge-sad { background: rgba(0, 114, 255, 0.12); color: #29b6f6; border: 1px solid rgba(0, 114, 255, 0.2); }
+        .badge-surprise { background: rgba(255, 145, 0, 0.12); color: var(--warning); border: 1px solid rgba(255, 145, 0, 0.2); }
+        .badge-angry { background: rgba(255, 23, 68, 0.12); color: var(--danger); border: 1px solid rgba(255, 23, 68, 0.2); }
+        .badge-fear { background: rgba(127, 0, 255, 0.12); color: #d500f9; border: 1px solid rgba(127, 0, 255, 0.2); }
+
+        .history-quality { font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem; }
+        .history-actions { display: flex; gap: 8px; }
+        
+        .table-empty { padding: 5rem; text-align: center; color: var(--text-muted); }
+        .table-empty i { font-size: 3.5rem; margin-bottom: 1.5rem; color: rgba(0, 242, 254, 0.15); }
+        .table-empty p { font-size: 0.95rem; }
+
+        /* SaaS pagination footer */
+        .saas-table-footer { padding: 1.25rem 1.8rem; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; color: var(--text-secondary); }
+        .pagination-btn-group { display: flex; gap: 6px; }
+        .pag-btn { background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 6px; padding: 6px 12px; color: var(--text-primary); cursor: pointer; transition: var(--transition-smooth); }
+        .pag-btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(0, 242, 254, 0.2); color: var(--accent-cyan); }
+
+        @media (max-width: 900px) { .app-container { flex-direction: column; } .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-glass); padding: 1.5rem; } .logo-area { margin-bottom: 1.5rem; } .nav-menu { flex-direction: row; flex-wrap: wrap; } .sidebar-footer { display: none; } .main-content { padding: 1.5rem; } }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fa-solid fa-brain-circuit"></i></div>
+                <div class="logo-text">
+                    <h2>Face<span>Scan.AI</span></h2>
+                    <p>AI Engine v3.0.0</p>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item" onclick="window.location.href='/scanner'">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Bảng Điều Khiển</span>
+                </button>
+                <button class="nav-item active" onclick="window.location.href='/history'">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Lịch Sử Quét</span>
+                </button>
+                <button class="nav-item" onclick="window.location.href='/analytics'">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Báo Cáo Thống Kê</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="sidebar-profile">
+                    <div class="profile-avatar">QA</div>
+                    <div class="profile-info">
+                        <h5>Sam Administrator</h5>
+                        <p>Enterprise Account</p>
+                    </div>
+                </div>
+                <div class="db-status-container">
+                    <div class="status-indicator" id="db-indicator">
+                        <span class="status-dot pulsing"></span>
+                        <span class="status-text">Connecting...</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header bar -->
+            <header class="app-header">
+                <div class="header-title">
+                    <h1>Nhật Ký Quét Hệ Thống</h1>
+                    <p>Lịch sử lưu trữ, kết quả đo lường trắc học và water swatches màu da của các bản ghi quét khuôn mặt</p>
+                </div>
+                <div class="header-actions">
+                    <button class="action-circle-btn"><i class="fa-solid fa-bell"></i><span class="action-badge"></span></button>
+                    <button class="action-circle-btn"><i class="fa-solid fa-gear"></i></button>
+                </div>
+            </header>
+
+            <section class="tab-content">
+                <div class="glass-panel history-panel cyan-highlight">
+                    <div class="panel-header-search">
+                        <h3><i class="fa-solid fa-list-check"></i> Nhật Ký Phân Tích</h3>
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="history-search" placeholder="Tìm kiếm theo tên tệp, độ tuổi, cảm xúc, nước da...">
+                        </div>
+                    </div>
+
+                    <div class="history-table-container">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Hình ảnh</th>
+                                    <th>Tên Tệp</th>
+                                    <th>Thời Gian Quét</th>
+                                    <th>Điểm Số AI</th>
+                                    <th>Cảm Xúc Chủ Đạo</th>
+                                    <th>Nước Da Cheek-RGB</th>
+                                    <th>Điểm Chất Lượng</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-tbody"></tbody>
+                        </table>
+                        
+                        <div class="table-empty hidden" id="history-empty">
+                            <i class="fa-solid fa-brain-circuit fa-spin" style="animation-duration: 20s;"></i>
+                            <p>Nhật ký hệ thống chưa ghi nhận lượt phân tích nào. Hãy tải lên ảnh để tạo bản phân tích đầu tiên.</p>
+                        </div>
+                    </div>
+
+                    <!-- SaaS pagination footer mockup -->
+                    <div class="saas-table-footer">
+                        <div>Hiển thị <span id="pag-showing-count">0</span> bản ghi phân tích</div>
+                        <div class="pagination-btn-group">
+                            <button class="pag-btn"><i class="fa-solid fa-chevron-left"></i> Trước</button>
+                            <button class="pag-btn">Sau <i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Check if opened as local file (CORS fallback) or served from backend (relative links)
+        const API_BASE = (window.location.protocol === 'file:') ? 'http://127.0.0.1:8000' : '';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkDatabaseStatus();
+            loadHistory();
+        });
+
+        // DB indicator monitor
+        async function checkDatabaseStatus() {
+            const dbIndicator = document.getElementById('db-indicator');
+            try {
+                const response = await fetch(`${API_BASE}/api/db-status`);
+                if (!response.ok) throw new Error("Offline");
+                const data = await response.json();
+                dbIndicator.className = 'status-indicator';
+                
+                if (data.status === 'PostgreSQL') {
+                    dbIndicator.classList.add('postgres');
+                    dbIndicator.querySelector('.status-dot').className = 'status-dot';
+                    dbIndicator.querySelector('.status-text').textContent = 'PostgreSQL Online';
+                } else {
+                    dbIndicator.classList.add('fallback');
+                    dbIndicator.querySelector('.status-dot').className = 'status-dot pulsing';
+                    dbIndicator.querySelector('.status-text').textContent = 'SQLite Fallback';
+                }
+            } catch (e) {
+                dbIndicator.className = 'status-indicator error';
+                dbIndicator.querySelector('.status-dot').className = 'status-dot pulsing';
+                dbIndicator.querySelector('.status-text').textContent = 'Database Offline';
+            }
+        }
+
+        // Fetch scan logs
+        async function loadHistory() {
+            const tbody = document.getElementById('history-tbody');
+            try {
+                const response = await fetch(`${API_BASE}/api/history`);
+                if (!response.ok) throw new Error("Load failed");
+                const data = await response.json();
+                
+                renderHistoryTable(data);
+
+                // Search filtering
+                const searchInput = document.getElementById('history-search');
+                searchInput.addEventListener('input', () => {
+                    const query = searchInput.value.toLowerCase().trim();
+                    const filtered = data.filter(item => {
+                        const faceScore = (item.quality_metrics && item.quality_metrics.face_score) ? item.quality_metrics.face_score : 0.0;
+                        const scoreText = faceScore > 0 ? `${faceScore}/10` : 'N/A';
+                        return item.image_name.toLowerCase().includes(query) ||
+                            item.primary_emotion.toLowerCase().includes(query) ||
+                            scoreText.includes(query) ||
+                            (item.skin_details && item.skin_details.toLowerCase().includes(query));
+                    });
+                    renderHistoryTable(filtered);
+                });
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--danger)">Không thể kết nối cơ sở dữ liệu để lấy nhật ký quét. Lỗi: ${e.message}</td></tr>`;
+            }
+        }
+
+        function renderHistoryTable(records) {
+            const tbody = document.getElementById('history-tbody');
+            const empty = document.getElementById('history-empty');
+            const showingCount = document.getElementById('pag-showing-count');
+            tbody.innerHTML = '';
+            
+            showingCount.textContent = records.length;
+            
+            if (records.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+            
+            const badges = { 
+                'happy': 'badge-happy', 
+                'sad': 'badge-sad', 
+                'neutral': 'badge-neutral', 
+                'surprise': 'badge-surprise', 
+                'angry': 'badge-angry', 
+                'fear': 'badge-fear' 
+            };
+            
+            const vnTranslation = { 
+                'happy': 'Vui vẻ', 
+                'sad': 'Buồn bã', 
+                'neutral': 'Bình thường', 
+                'surprise': 'Ngạc nhiên', 
+                'angry': 'Tức giận', 
+                'fear': 'Lo sợ' 
+            };
+
+            records.forEach(record => {
+                const tr = document.createElement('tr');
+                tr.id = `history-row-${record.id}`;
+                
+                const date = new Date(record.created_at).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const emotion = record.primary_emotion.toLowerCase();
+                const cls = badges[emotion] || 'badge-neutral';
+                const vnName = vnTranslation[emotion] || record.primary_emotion;
+
+                // Color of quality score text
+                let scoreColor = 'var(--success)';
+                if (record.quality_score < 55) scoreColor = 'var(--danger)';
+                else if (record.quality_score < 80) scoreColor = 'var(--warning)';
+                
+                // Skin Details parsing
+                const skinParts = (record.skin_details || "#ebd0c0|Tự nhiên (Medium)").split('|');
+                const hexColor = skinParts[0];
+                const skinLabel = skinParts[1].split(' (')[0]; // strip English label
+
+                // Face Score calculation
+                const faceScore = (record.quality_metrics && record.quality_metrics.face_score) ? record.quality_metrics.face_score : 0.0;
+                const scoreText = faceScore > 0 ? `${faceScore}/10` : 'N/A';
+
+                tr.innerHTML = `
+                    <td><img class="history-thumb" src="${API_BASE}/uploads/${record.saved_path}" alt="Image"></td>
+                    <td><div class="history-filename" title="${record.image_name}">${record.image_name}</div></td>
+                    <td><span class="history-date">${date}</span></td>
+                    <td><span class="history-age" style="color: var(--accent-magenta); font-weight: 800; text-shadow: 0 0 8px rgba(254, 9, 121, 0.25);">${scoreText}</span></td>
+                    <td><span class="badge ${cls}">${vnName}</span></td>
+                    <td>
+                        <div class="skin-pill">
+                            <span class="skin-swatch-circle" style="background-color: ${hexColor}"></span>
+                            <span>${skinLabel}</span>
+                        </div>
+                    </td>
+                    <td><span class="history-quality" style="color: ${scoreColor}">${Math.round(record.quality_score)}%</span></td>
+                    <td>
+                        <div class="history-actions">
+                            <button class="btn-icon-only text-accent" onclick="viewDetails(${record.id})" title="Xem lại">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button class="btn-icon-only text-danger" onclick="deleteItem(${record.id})" title="Xóa">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tr.dataset.recordObj = JSON.stringify(record);
+                tbody.appendChild(tr);
+            });
+        }
+
+        // View details stores the record into sessionStorage and redirects back to dashboard
+        window.viewDetails = function(id) {
+            const tr = document.getElementById(`history-row-${id}`);
+            if (tr && tr.dataset.recordObj) {
+                sessionStorage.setItem('view_record', tr.dataset.recordObj);
+                window.location.href = '/scanner';
+            }
+        };
+
+        // Delete from database registry and uploads folder
+        window.deleteItem = async function(id) {
+            if (!confirm("Bạn có chắc chắn muốn xóa bản ghi phân tích này khỏi sổ nhật ký?")) return;
+            try {
+                const response = await fetch(`${API_BASE}/api/history/${id}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error("Delete failed");
+                
+                const row = document.getElementById(`history-row-${id}`);
+                if (row) {
+                    row.style.transition = 'all 0.4s ease';
+                    row.style.opacity = '0';
+                    row.style.transform = 'translateX(50px)';
+                    setTimeout(() => {
+                        row.remove();
+                        if (document.getElementById('history-tbody').children.length === 0) {
+                            document.getElementById('history-empty').classList.remove('hidden');
+                        }
+                    }, 400);
+                }
+            } catch (e) {
+                alert(`Không thể xóa bản ghi quét! Chi tiết: ${e.message}`);
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Face Scanner - Professional SaaS Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Shared Premium Neon-Cyan SaaS Theme Colors */
+        :root {
+            --bg-dark: #06040d;
+            --bg-panel: rgba(14, 11, 26, 0.65);
+            --bg-panel-hover: rgba(22, 17, 40, 0.85);
+            --accent-cyan: #00f2fe;
+            --accent-cyan-glow: rgba(0, 242, 254, 0.35);
+            --accent-magenta: #fe0979;
+            --accent-purple: #7f00ff;
+            --accent-blue: #0072ff;
+            --text-primary: #f5f6fa;
+            --text-secondary: #a8aed0;
+            --text-muted: #62688f;
+            --success: #00e676;
+            --warning: #ff9100;
+            --danger: #ff1744;
+            --border-glass: rgba(255, 255, 255, 0.06);
+            --border-cyan: rgba(0, 242, 254, 0.15);
+            --font-sans: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 5% 15%, rgba(127, 0, 255, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 95% 85%, rgba(0, 242, 254, 0.15) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        /* App Shell Layout */
+        .app-container { display: flex; min-height: 100vh; }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px; background: rgba(6, 4, 13, 0.9); border-right: 1px solid var(--border-glass);
+            padding: 2.2rem 1.25rem; display: flex; flex-direction: column; justify-content: space-between;
+            flex-shrink: 0; backdrop-filter: blur(20px); z-index: 100;
+        }
+        .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 3rem; padding-left: 8px; }
+        .logo-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: white;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+        .logo-text h2 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; }
+        .logo-text h2 span { background: linear-gradient(to right, var(--accent-cyan), var(--accent-magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-text p { font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono); }
+        
+        .nav-menu { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+        .nav-item {
+            background: none; border: none; padding: 12px 16px; border-radius: 12px;
+            color: var(--text-secondary); display: flex; align-items: center; gap: 14px;
+            cursor: pointer; font-size: 0.92rem; font-weight: 500; text-align: left;
+            transition: var(--transition-smooth); width: 100%;
+        }
+        .nav-item i { font-size: 1.1rem; width: 20px; text-align: center; }
+        .nav-item:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.03); transform: translateX(3px); }
+        .nav-item.active {
+            color: var(--accent-cyan); background: rgba(0, 242, 254, 0.06);
+            border: 1px solid rgba(0, 242, 254, 0.12); box-shadow: inset 0 0 10px rgba(0, 242, 254, 0.02);
+        }
+        .nav-item.active i { text-shadow: 0 0 8px var(--accent-cyan-glow); }
+        
+        /* User profile block at bottom of sidebar */
+        .sidebar-footer { padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.04); display: flex; flex-direction: column; gap: 12px; }
+        .sidebar-profile { display: flex; align-items: center; gap: 12px; padding: 6px; border-radius: 10px; transition: var(--transition-smooth); }
+        .profile-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-purple), var(--accent-magenta)); border: 1.5px solid var(--border-glass); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 0.9rem; }
+        .profile-info { flex-grow: 1; }
+        .profile-info h5 { font-size: 0.85rem; font-weight: 600; color: #fff; }
+        .profile-info p { font-size: 0.72rem; color: var(--text-muted); }
+        
+        .db-status-container { background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); border-radius: 10px; padding: 10px 14px; }
+        .status-indicator { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; font-weight: 500; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: var(--text-muted); }
+        .status-indicator.postgres .status-dot { background-color: var(--success); box-shadow: 0 0 8px var(--success); }
+        .status-indicator.fallback .status-dot { background-color: var(--warning); box-shadow: 0 0 8px var(--warning); }
+        .status-indicator.error .status-dot { background-color: var(--danger); box-shadow: 0 0 8px var(--danger); }
+        .status-text { color: var(--text-secondary); font-family: var(--font-mono); }
+        .pulsing { animation: status-pulse 1.8s infinite ease-in-out; }
+        @keyframes status-pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+        /* Main Content Container */
+        .main-content { flex-grow: 1; padding: 2.2rem 2.8rem; overflow-y: auto; max-height: 100vh; display: flex; flex-direction: column; gap: 1.8rem; }
+        
+        /* Top Navigation Header bar */
+        .app-header { display: flex; justify-content: space-between; align-items: center; }
+        .header-title h1 {
+            font-size: 1.85rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px;
+            background: linear-gradient(120deg, var(--text-primary) 50%, var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .header-title p { color: var(--text-secondary); font-size: 0.88rem; }
+        
+        /* Quick System Action tools */
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .action-circle-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-glass); background: rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); cursor: pointer; transition: var(--transition-smooth); }
+        .action-circle-btn:hover { background: rgba(255,255,255,0.06); color: var(--accent-cyan); border-color: rgba(0, 242, 254, 0.2); }
+        .action-badge { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-magenta); box-shadow: 0 0 6px var(--accent-magenta); }
+
+        /* Top SaaS Cards Summary Row */
+        .saas-metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .metric-card { padding: 1.4rem; display: flex; align-items: center; gap: 1.25rem; }
+        .metric-card-icon {
+            width: 50px; height: 50px; border-radius: 12px; background: rgba(0, 242, 254, 0.05);
+            display: flex; align-items: center; justify-content: center; font-size: 1.35rem; color: var(--accent-cyan);
+            border: 1px solid rgba(0, 242, 254, 0.1);
+        }
+        .metric-card:nth-child(2) .metric-card-icon { background: rgba(254, 9, 121, 0.05); color: var(--accent-magenta); border-color: rgba(254, 9, 121, 0.1); }
+        .metric-card:nth-child(3) .metric-card-icon { background: rgba(0, 230, 118, 0.05); color: var(--success); border-color: rgba(0, 230, 118, 0.1); }
+        .metric-card-data h4 { font-size: 1.45rem; font-weight: 800; font-family: var(--font-mono); color: #fff; margin-bottom: 2px; }
+        .metric-card-data p { font-size: 0.8rem; color: var(--text-secondary); font-weight: 500; }
+
+        /* Dashboard Core Panels Grid */
+        .dashboard-body-grid { display: grid; grid-template-columns: 360px 1fr; gap: 1.8rem; align-items: start; }
+
+        /* Frosted Panels */
+        .glass-panel {
+            background: var(--bg-panel); border: 1px solid var(--border-glass); border-radius: 18px;
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); transition: var(--transition-smooth);
+        }
+        .glass-panel.cyan-highlight { border-color: var(--border-cyan); }
+        .glass-panel:hover { border-color: rgba(0, 242, 254, 0.2); }
+
+        /* Left Side: Upload Capture tools */
+        .upload-panel { padding: 1.6rem; display: flex; flex-direction: column; gap: 1.25rem; }
+        .panel-headline { font-size: 1rem; font-weight: 700; color: var(--accent-cyan); display: flex; align-items: center; gap: 10px; }
+        .panel-headline i { text-shadow: 0 0 8px var(--accent-cyan-glow); }
+        
+        .drag-drop-area {
+            border: 2px dashed rgba(255, 255, 255, 0.1); border-radius: 12px;
+            padding: 2rem 1.25rem; text-align: center; cursor: pointer;
+            transition: var(--transition-smooth); background: rgba(0, 0, 0, 0.25);
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .drag-drop-area:hover, .drag-drop-area.dragover { border-color: var(--accent-cyan); background: rgba(0, 242, 254, 0.02); }
+        .drag-drop-area i { font-size: 2.2rem; color: var(--text-muted); transition: var(--transition-smooth); }
+        .drag-drop-area:hover i { color: var(--accent-cyan); transform: scale(1.08); }
+        .drag-drop-area h5 { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+        .drag-drop-area p { font-size: 0.72rem; color: var(--text-muted); }
+
+        /* Webcam capturing widgets */
+        .webcam-feed-wrapper {
+            width: 100%; aspect-ratio: 1.25; border-radius: 10px; overflow: hidden;
+            position: relative; background: #000; border: 1px solid var(--border-glass);
+            display: none;
+        }
+        #video-feed { width: 100%; height: 100%; object-fit: cover; }
+        .webcam-hud-actions {
+            position: absolute; bottom: 10px; left: 0; right: 0;
+            display: flex; justify-content: center; gap: 8px; padding: 0 10px;
+        }
+
+        /* Image preview box */
+        .image-preview-wrapper {
+            width: 100%; aspect-ratio: 1.25; border-radius: 10px; overflow: hidden;
+            border: 1px solid var(--border-glass); background: rgba(0,0,0,0.5);
+            position: relative; display: none;
+        }
+        .image-preview-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .trash-preview-btn {
+            position: absolute; top: 8px; right: 8px; width: 30px; height: 30px;
+            border-radius: 50%; background: rgba(0,0,0,0.7); border: 1px solid var(--border-glass);
+            color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: var(--transition-smooth);
+        }
+        .trash-preview-btn:hover { background: var(--danger); border-color: transparent; transform: scale(1.1); }
+
+        /* Custom buttons style */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 11px 22px; border-radius: 8px; font-size: 0.88rem; font-weight: 600;
+            cursor: pointer; border: none; outline: none; transition: var(--transition-smooth);
+            text-transform: uppercase; letter-spacing: 0.3px; width: 100%;
+        }
+        .btn-glow-cyan { background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-blue) 100%); color: #000; box-shadow: 0 4px 12px rgba(0, 242, 254, 0.2); }
+        .btn-glow-cyan:hover { box-shadow: 0 6px 18px rgba(0, 242, 254, 0.4); transform: translateY(-1.5px); }
+        .btn-muted-outline { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); color: var(--text-primary); }
+        .btn-muted-outline:hover { background: rgba(255, 255, 255, 0.06); transform: translateY(-1.5px); }
+
+        /* Right Side: Scan Analysis Results visualizer */
+        .analysis-viewport-panel { min-height: 580px; }
+        
+        /* Empty/Placeholder state layout */
+        .viewport-placeholder { height: 580px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
+        .viewport-placeholder i { font-size: 4.5rem; color: rgba(0,242,254,0.05); margin-bottom: 1.5rem; background: linear-gradient(135deg, rgba(0,242,254,0.15), rgba(127,0,255,0.15)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .viewport-placeholder h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: #fff; }
+        .viewport-placeholder p { color: var(--text-secondary); max-width: 440px; font-size: 0.88rem; line-height: 1.6; }
+
+        /* Loading / Scanning overlay line */
+        .viewport-scanning { height: 580px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
+        .laser-scanner-container {
+            position: relative; width: 380px; aspect-ratio: 1.25; border-radius: 12px; overflow: hidden;
+            border: 2px solid var(--accent-cyan); box-shadow: 0 0 25px rgba(0,242,254,0.2);
+        }
+        .laser-scanner-container img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.65) contrast(1.1); }
+        .laser-beam-sweeper {
+            position: absolute; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(180deg, rgba(0,242,254,0), rgba(0,242,254,0.9), rgba(0,242,254,0));
+            box-shadow: 0 0 15px var(--accent-cyan);
+            animation: sweeper 2s infinite ease-in-out;
+        }
+        @keyframes sweeper { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
+        .viewport-scanning h4 { font-size: 1.1rem; color: var(--accent-cyan); margin-top: 1.5rem; }
+
+        /* Success Results Viewport Layout */
+        .results-viewport-wrapper { padding: 1.8rem; display: flex; flex-direction: column; gap: 1.6rem; }
+        
+        /* Interactive Upper Row: Live Canvas Overlays and Metrics details */
+        .results-upper-row { display: grid; grid-template-columns: 340px 1fr; gap: 1.8rem; }
+        
+        /* HTML5 Canvas overlay container */
+        .ai-canvas-wrapper { position: relative; width: 100%; aspect-ratio: 1.25; border-radius: 12px; overflow: hidden; border: 1.5px solid var(--border-glass); background: #000; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        #ai-overlay-canvas { width: 100%; height: 100%; object-fit: contain; }
+
+        /* Quick stats circle & info */
+        .quality-metric-box { display: flex; flex-direction: column; justify-content: space-between; height: 100%; gap: 1rem; }
+        
+        .circle-and-label { display: flex; align-items: center; gap: 1.5rem; }
+        .svg-ring-container { position: relative; width: 110px; height: 110px; }
+        .svg-circle-bg { fill: none; stroke: rgba(255, 255, 255, 0.03); stroke-width: 8; }
+        .svg-circle-progress { fill: none; stroke: url(#cyanGrad); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 314; stroke-dashoffset: 314; transition: stroke-dashoffset 1.5s ease-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
+        .score-overlay-val { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .score-num { font-size: 1.65rem; font-weight: 800; font-family: var(--font-mono); color: #fff; }
+        .score-lbl { font-size: 0.58rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .image-feedback-card { background: rgba(0, 242, 254, 0.02); border: 1px dashed var(--border-cyan); border-radius: 10px; padding: 10px 14px; font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary); }
+        
+        .details-small-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.8rem; }
+        .small-metric-item { background: rgba(255,255,255,0.01); border: 1px solid var(--border-glass); border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; }
+        .sm-lbl { color: var(--text-secondary); }
+        .sm-val { font-weight: 700; font-family: var(--font-mono); color: var(--accent-cyan); }
+
+        /* Frosted tabs for details segmenting */
+        .glass-tab-menu { display: flex; border-bottom: 1.5px solid rgba(255,255,255,0.04); gap: 1.5rem; margin-top: 8px; }
+        .glass-tab-btn { background: none; border: none; outline: none; padding: 10px 4px; font-size: 0.88rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; position: relative; transition: var(--transition-smooth); }
+        .glass-tab-btn:hover { color: #fff; }
+        .glass-tab-btn.active { color: var(--accent-cyan); }
+        .glass-tab-btn.active::after { content: ''; position: absolute; bottom: -1.5px; left: 0; right: 0; height: 2px; background: var(--accent-cyan); box-shadow: 0 0 6px var(--accent-cyan); }
+
+        .tab-pane-content { padding-top: 1rem; }
+        
+        /* Tab pane 1: Characteristics Grid */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+        .feature-card { padding: 1.2rem 1.4rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .feature-card h5 { font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); display: flex; align-items: center; gap: 8px; letter-spacing: 0.5px; }
+        .feature-card h5 i { color: var(--accent-cyan); }
+        
+        .skin-pill { display: inline-flex; align-items: center; gap: 10px; margin-top: 4px; }
+        .swatch-circle { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); }
+        .skin-val-lbl { font-weight: 700; color: #fff; font-size: 0.9rem; }
+        .skin-hex-lbl { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent-cyan); }
+
+        .txt-feature-desc { font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary); }
+
+        /* Tab pane 2: Emotions analysis */
+        .emotions-pane-grid { display: grid; grid-template-columns: 240px 1fr; gap: 2rem; align-items: center; }
+        .emotion-bars-list { display: flex; flex-direction: column; gap: 10px; }
+        .em-bar-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 2px; }
+        .em-bar-outer { width: 100%; height: 5px; background: rgba(255,255,255,0.02); border-radius: 4px; overflow: hidden; }
+        .em-bar-fill { height: 100%; background: linear-gradient(to right, var(--accent-cyan), var(--accent-blue)); border-radius: 4px; width: 0%; transition: width 1.2s ease-out; }
+
+        /* Tab pane 3: Personality Luận giải */
+        .personality-layout { display: flex; flex-direction: column; gap: 12px; }
+        .p-headline { font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan); display: flex; align-items: center; gap: 8px; }
+        .p-body-p { font-size: 0.9rem; line-height: 1.7; color: var(--text-secondary); text-align: justify; border-left: 2px solid var(--accent-cyan); padding-left: 1.25rem; }
+
+        .rotating-brain { font-size: 4rem; color: rgba(0, 242, 254, 0.04); background: linear-gradient(135deg, rgba(0, 242, 254, 0.1), rgba(254, 9, 121, 0.1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 1200px) { .dashboard-body-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) {
+            .app-container { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-glass); padding: 1.5rem; }
+            .logo-area { margin-bottom: 1.5rem; }
+            .nav-menu { flex-direction: row; flex-wrap: wrap; }
+            .sidebar-footer { display: none; }
+            .main-content { padding: 1.5rem; }
+            .saas-metrics-row { grid-template-columns: 1fr; }
+            .results-upper-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fa-solid fa-brain-circuit"></i></div>
+                <div class="logo-text">
+                    <h2>Face<span>Scan.AI</span></h2>
+                    <p>AI Engine v3.0.0</p>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item active" onclick="window.location.href='/scanner'">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Bảng Điều Khiển</span>
+                </button>
+                <button class="nav-item" onclick="window.location.href='/history'">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Lịch Sử Quét</span>
+                </button>
+                <button class="nav-item" onclick="window.location.href='/analytics'">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Báo Cáo Thống Kê</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="sidebar-profile">
+                    <div class="profile-avatar">QA</div>
+                    <div class="profile-info">
+                        <h5>Sam Administrator</h5>
+                        <p>Enterprise Account</p>
+                    </div>
+                </div>
+                <div class="db-status-container">
+                    <div class="status-indicator" id="db-indicator">
+                        <span class="status-dot pulsing"></span>
+                        <span class="status-text">Connecting...</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header bar -->
+            <header class="app-header">
+                <div class="header-title">
+                    <h1>Phân Tích Face AI</h1>
+                    <p>Hệ thống nhân dạng, phân tích nước da, cảm xúc trắc học và cấu trúc nhân tướng học SaaS Enterprise</p>
+                </div>
+                <div class="header-actions">
+                    <button class="action-circle-btn"><i class="fa-solid fa-bell"></i><span class="action-badge"></span></button>
+                    <button class="action-circle-btn"><i class="fa-solid fa-gear"></i></button>
+                </div>
+            </header>
+
+            <!-- Top SaaS Metrics summary row -->
+            <div class="saas-metrics-row">
+                <div class="glass-panel metric-card cyan-highlight">
+                    <div class="metric-card-icon"><i class="fa-solid fa-users-viewfinder"></i></div>
+                    <div class="metric-card-data">
+                        <h4 id="top-total-scans">-</h4>
+                        <p>Lượt quét hệ thống</p>
+                    </div>
+                </div>
+                <div class="glass-panel metric-card cyan-highlight">
+                    <div class="metric-card-icon"><i class="fa-solid fa-star-of-david"></i></div>
+                    <div class="metric-card-data">
+                        <h4 id="top-avg-quality">-</h4>
+                        <p>Chất lượng quét trung bình</p>
+                    </div>
+                </div>
+                <div class="glass-panel metric-card cyan-highlight">
+                    <div class="metric-card-icon"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="metric-card-data">
+                        <h4>12ms</h4>
+                        <p>Tốc độ phản hồi AI</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body panels grid -->
+            <div class="dashboard-body-grid">
+                
+                <!-- Left panel: upload feeds tools -->
+                <div class="glass-panel upload-panel cyan-highlight">
+                    <h3 class="panel-headline"><i class="fa-solid fa-camera"></i> Nguồn Ảnh Phân Tích</h3>
+                    
+                    <!-- Drag-drop dropzone -->
+                    <div class="drag-drop-area" id="drop-area" onclick="clickFileInput()">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <h5>Tải lên tập tin ảnh</h5>
+                        <p>Kéo thả ảnh chân dung rõ mặt vào đây hoặc click để duyệt (JPEG, PNG tối đa 10MB)</p>
+                    </div>
+                    <input type="file" id="file-uploader" class="hidden" accept="image/*" onchange="fileSelected(event)">
+                    
+                    <!-- Video capture feed widget -->
+                    <div class="webcam-feed-wrapper" id="webcam-feed-box">
+                        <video id="video-feed" autoplay playsinline></video>
+                        <div class="webcam-hud-actions">
+                            <button class="btn btn-glow-cyan" onclick="snapCamera()"><i class="fa-solid fa-camera-retro"></i> Chụp Ảnh</button>
+                            <button class="btn btn-muted-outline" onclick="deactivateWebcam()"><i class="fa-solid fa-ban"></i> Hủy</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Preview frames container -->
+                    <div class="image-preview-wrapper" id="preview-frame-box">
+                        <img id="preview-frame-img" src="" alt="Selected Preview">
+                        <button class="trash-preview-btn" onclick="discardPreview()" title="Hủy ảnh"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+
+                    <!-- Scan and action buttons -->
+                    <div class="action-buttons-box">
+                        <button class="btn btn-muted-outline" id="webcam-open-btn" onclick="activateWebcam()" style="margin-bottom:10px;">
+                            <i class="fa-solid fa-video"></i> Sử dụng Camera Live
+                        </button>
+                        <button class="btn btn-glow-cyan hidden" id="scan-submit-btn" onclick="executeScanAnalysis()">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Tiến hành Phân Tích AI
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right panel: Visualizer viewports -->
+                <div class="glass-panel analysis-viewport-panel cyan-highlight" style="overflow:hidden;">
+                    
+                    <!-- Empty state placeholder -->
+                    <div class="viewport-placeholder" id="view-placeholder">
+                        <i class="fa-solid fa-yin-yang fa-spin" style="animation-duration: 25s;"></i>
+                        <h3>Trung Tâm Kết Quả AI</h3>
+                        <p>Hệ thống Face AI SaaS đã sẵn sàng. Tải lên một bức chân dung góc chính diện để hệ thống vẽ bản đồ landmark khuôn mặt, đo độ sắc nét ảnh, phân tích giới tính, độ tuổi, water-cheeks swatches màu da và tính cách.</p>
+                    </div>
+
+                    <!-- Scanning load indicator -->
+                    <div class="viewport-scanning hidden" id="view-scanning">
+                        <div class="laser-scanner-container">
+                            <img id="laser-image-view" src="" alt="Laser Scanning">
+                            <div class="laser-beam-sweeper"></div>
+                        </div>
+                        <h4><i class="fa-solid fa-microchip fa-spin"></i> Đang chạy quét Face Landmark 68-Points...</h4>
+                    </div>
+
+                    <!-- Success analysis data viewport -->
+                    <div class="results-viewport-wrapper hidden" id="view-results">
+                        
+                        <!-- Upper: Interactive canvas overlay and quick metrics -->
+                        <div class="results-upper-row">
+                            
+                            <!-- Canvas containing the face image + landmarks -->
+                            <div class="ai-canvas-wrapper">
+                                <canvas id="ai-overlay-canvas"></canvas>
+                            </div>
+                            
+                            <!-- Quality score and small breakdowns -->
+                            <div class="quality-metric-box">
+                                <div class="circle-and-label">
+                                    <div class="svg-ring-container">
+                                        <svg width="110" height="110" viewBox="0 0 110 110">
+                                            <defs>
+                                                <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                    <stop offset="0%" stop-color="#00f2fe" />
+                                                    <stop offset="100%" stop-color="#7f00ff" />
+                                                </linearGradient>
+                                            </defs>
+                                            <circle class="svg-circle-bg" cx="55" cy="55" r="50" />
+                                            <circle class="svg-circle-progress" id="metric-quality-progress" cx="55" cy="55" r="50" />
+                                        </svg>
+                                        <div class="score-overlay-val">
+                                            <span class="score-num" id="metric-quality-score">0%</span>
+                                            <span class="score-lbl">Chất lượng</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size:0.95rem; font-weight:700; color:#fff;" id="metric-primary-emotion-vn">-</div>
+                                        <div style="font-size:0.75rem; color:var(--text-secondary)">Trạng thái cảm xúc</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="details-small-grid">
+                                    <div class="small-metric-item">
+                                        <span class="sm-lbl">Chấm điểm:</span>
+                                        <span class="sm-val" id="metric-face-score" style="color:var(--accent-magenta); font-weight:800;">0.0/10</span>
+                                    </div>
+                                    <div class="small-metric-item">
+                                        <span class="sm-lbl">Sắc nét:</span>
+                                        <span class="sm-val" id="metric-sharpness">0%</span>
+                                    </div>
+                                    <div class="small-metric-item">
+                                        <span class="sm-lbl">Độ sáng:</span>
+                                        <span class="sm-val" id="metric-brightness">0%</span>
+                                    </div>
+                                    <div class="small-metric-item">
+                                        <span class="sm-lbl">Tương phản:</span>
+                                        <span class="sm-val" id="metric-contrast">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quality feedback context card -->
+                        <div class="image-feedback-card" id="metric-feedback-txt"></div>
+
+                        <!-- Frosted tabs system -->
+                        <div class="glass-tab-menu">
+                            <button class="glass-tab-btn active" id="tab-btn-features" onclick="switchResultsTab('features')">Quan Sát Trực Quan</button>
+                            <button class="glass-tab-btn" id="tab-btn-emotions" onclick="switchResultsTab('emotions')">Điểm Nổi Bật</button>
+                            <button class="glass-tab-btn" id="tab-btn-personality" onclick="switchResultsTab('personality')">Mức Độ Chắc Chắn</button>
+                        </div>
+
+                        <!-- Tab Pane 1: Facial Characteristics Grid -->
+                        <div class="tab-pane-content" id="pane-features">
+                            <div class="features-grid">
+                                <div class="feature-card" style="border-color: rgba(254, 9, 121, 0.25); background: rgba(254, 9, 121, 0.03);">
+                                    <h5 style="color: var(--accent-magenta);"><i class="fa-solid fa-star" style="color: var(--accent-magenta);"></i> Chấm Điểm Khuôn Mặt</h5>
+                                    <div style="font-size:1.35rem; font-weight:800; color:#fff" id="feature-face-score-val">-</div>
+                                </div>
+                                <div class="feature-card">
+                                    <h5><i class="fa-solid fa-face-smile"></i> 1. Khuôn mặt</h5>
+                                    <p class="txt-feature-desc" id="obs-face">-</p>
+                                </div>
+                                <div class="feature-card">
+                                    <h5><i class="fa-solid fa-eye"></i> 2. Mắt</h5>
+                                    <p class="txt-feature-desc" id="obs-eyes">-</p>
+                                </div>
+                                <div class="feature-card">
+                                    <h5><i class="fa-solid fa-signature"></i> 3. Mũi</h5>
+                                    <p class="txt-feature-desc" id="obs-nose">-</p>
+                                </div>
+                                <div class="feature-card">
+                                    <h5><i class="fa-solid fa-signature"></i> 4. Môi</h5>
+                                    <p class="txt-feature-desc" id="obs-lips">-</p>
+                                </div>
+                                <div class="feature-card">
+                                    <h5><i class="fa-solid fa-palette"></i> 5. Da</h5>
+                                    <div class="skin-pill" style="margin-bottom: 8px;">
+                                        <span class="swatch-circle" id="feature-skin-color"></span>
+                                        <span class="skin-val-lbl" id="feature-skin-label">-</span>
+                                        <span class="skin-hex-lbl" id="feature-skin-hex">-</span>
+                                    </div>
+                                    <p class="txt-feature-desc" id="obs-skin">-</p>
+                                </div>
+                                <div class="feature-card">
+                                    <h5><i class="fa-solid fa-scissors"></i> 6. Tóc</h5>
+                                    <p class="txt-feature-desc" id="obs-hair">-</p>
+                                </div>
+                                <div class="feature-card">
+                                    <h5><i class="fa-solid fa-face-laugh"></i> 7. Biểu cảm</h5>
+                                    <p class="txt-feature-desc" id="obs-expression">-</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Pane 2: Key Highlights -->
+                        <div class="tab-pane-content hidden" id="pane-emotions">
+                            <div class="personality-layout">
+                                <h4 class="p-headline" style="color:var(--accent-cyan); margin-bottom: 12px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Các Đặc Điểm Dễ Nhận Biết Nhất</h4>
+                                <p class="p-body-p" id="obs-highlights" style="border-left: 2px solid var(--accent-cyan); padding-left: 1.25rem; font-size: 0.92rem; line-height: 1.7; color: var(--text-secondary); text-align: justify;">-</p>
+                            </div>
+                        </div>
+
+                        <!-- Tab Pane 3: Confidence Ratings Grid -->
+                        <div class="tab-pane-content hidden" id="pane-personality">
+                            <div class="personality-layout">
+                                <h4 class="p-headline" style="color:var(--accent-magenta); margin-bottom: 12px;"><i class="fa-solid fa-shield-halved"></i> Mức Độ Tin Cậy Của Nhận Xét</h4>
+                                <div class="features-grid" id="confidence-grid" style="margin-top: 10px;">
+                                    <!-- Dynamic confidence badges cards go here -->
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    // Check if opened as local file (CORS fallback) or served from backend (relative links)
+    const API_BASE = (window.location.protocol === 'file:') ? 'http://127.0.0.1:8000' : '';
+    let liveWebcamStream = null;
+    let scanFileBlob = null;
+    let activeDetailRecord = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        checkDatabaseStatus();
+        loadHeaderSummary();
+        
+        // Check for instantaneous cross-page restorations from history list
+        const restoredRecord = sessionStorage.getItem('view_record');
+        if (restoredRecord) {
+            try {
+                const record = JSON.parse(restoredRecord);
+                renderAnalysisResults(record);
+                sessionStorage.removeItem('view_record');
+            } catch(e) {
+                console.error("Error loading restored record", e);
+            }
+        }
+    });
+
+    // DB status indicator monitor
+    async function checkDatabaseStatus() {
+        const dbIndicator = document.getElementById('db-indicator');
+        try {
+            const response = await fetch(`${API_BASE}/api/db-status`);
+            if (!response.ok) throw new Error("Offline");
+            const data = await response.json();
+            dbIndicator.className = 'status-indicator';
+            
+            if (data.status === 'PostgreSQL') {
+                dbIndicator.classList.add('postgres');
+                dbIndicator.querySelector('.status-dot').className = 'status-dot';
+                dbIndicator.querySelector('.status-text').textContent = 'PostgreSQL Online';
+            } else {
+                dbIndicator.classList.add('fallback');
+                dbIndicator.querySelector('.status-dot').className = 'status-dot pulsing';
+                dbIndicator.querySelector('.status-text').textContent = 'SQLite Fallback';
+            }
+        } catch (e) {
+            dbIndicator.className = 'status-indicator error';
+            dbIndicator.querySelector('.status-dot').className = 'status-dot pulsing';
+            dbIndicator.querySelector('.status-text').textContent = 'Database Offline';
+        }
+    }
+
+    // Quick stats loader for header metric blocks
+    async function loadHeaderSummary() {
+        try {
+            const response = await fetch(`${API_BASE}/api/analytics`);
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('top-total-scans').textContent = data.total_scans;
+                document.getElementById('top-avg-quality').textContent = `${Math.round(data.average_quality)}%`;
+            }
+        } catch (e) {
+            console.error("Failed to load top metric counts", e);
+        }
+    }
+
+    // Trigger file dialog
+    function clickFileInput() {
+        document.getElementById('file-uploader').click();
+    }
+
+    // Capture file choose
+    function fileSelected(e) {
+        const file = e.target.files[0];
+        if (file) {
+            bindFileObject(file);
+        }
+    }
+
+    // Drag-drop events
+    const dropzone = document.getElementById('drop-area');
+    ['dragenter', 'dragover'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        }, false);
+    });
+    ['dragleave', 'drop'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+        }, false);
+    });
+    dropzone.addEventListener('drop', (e) => {
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            bindFileObject(file);
+        }
+    }, false);
+
+    // Bind File preview
+    function bindFileObject(file) {
+        scanFileBlob = file;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const previewBox = document.getElementById('preview-frame-box');
+            const previewImg = document.getElementById('preview-frame-img');
+            const dropArea = document.getElementById('drop-area');
+            
+            previewImg.src = e.target.result;
+            dropArea.classList.add('hidden');
+            previewBox.style.display = 'block';
+            
+            document.getElementById('scan-submit-btn').classList.remove('hidden');
+            deactivateWebcam();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Remove preview frame
+    function discardPreview() {
+        scanFileBlob = null;
+        document.getElementById('preview-frame-box').style.display = 'none';
+        document.getElementById('drop-area').classList.remove('hidden');
+        document.getElementById('scan-submit-btn').classList.add('hidden');
+        document.getElementById('file-uploader').value = '';
+    }
+
+    // Activate live camera
+    async function activateWebcam() {
+        discardPreview();
+        const video = document.getElementById('video-feed');
+        const feedBox = document.getElementById('webcam-feed-box');
+        const dropArea = document.getElementById('drop-area');
+        const openBtn = document.getElementById('webcam-open-btn');
+
+        try {
+            liveWebcamStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            video.srcObject = liveWebcamStream;
+            dropArea.classList.add('hidden');
+            feedBox.style.display = 'block';
+            openBtn.classList.add('hidden');
+        } catch (e) {
+            alert("Không thể kết nối camera của bạn! Vui lòng cho phép quyền truy cập.");
+        }
+    }
+
+    // Stop webcam tracks
+    function deactivateWebcam() {
+        const video = document.getElementById('video-feed');
+        const feedBox = document.getElementById('webcam-feed-box');
+        const openBtn = document.getElementById('webcam-open-btn');
+        
+        if (liveWebcamStream) {
+            liveWebcamStream.getTracks().forEach(track => track.stop());
+            liveWebcamStream = null;
+        }
+        video.srcObject = null;
+        feedBox.style.display = 'none';
+        openBtn.classList.remove('hidden');
+    }
+
+    // Capture camera snapshot
+    function snapCamera() {
+        const video = document.getElementById('video-feed');
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        canvas.toBlob(blob => {
+            const file = new File([blob], "webcam_snap.jpg", { type: "image/jpeg" });
+            bindFileObject(file);
+        }, 'image/jpeg', 0.95);
+    }
+
+    // Post multipart upload scan
+    async function executeScanAnalysis() {
+        if (!scanFileBlob) {
+            alert("Vui lòng tải lên một hình ảnh!");
+            return;
+        }
+
+        // Display scanning laser sweeper
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('laser-image-view').src = e.target.result;
+        };
+        reader.readAsDataURL(scanFileBlob);
+
+        document.getElementById('view-placeholder').classList.add('hidden');
+        document.getElementById('view-results').classList.add('hidden');
+        document.getElementById('view-scanning').classList.remove('hidden');
+
+        const formData = new FormData();
+        formData.append('file', scanFileBlob);
+
+        try {
+            const response = await fetch(`${API_BASE}/api/analyze`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.detail || "Scanning failed.");
+            }
+
+            const data = await response.json();
+            
+            // Hold loader for premium scanner feel
+            setTimeout(() => {
+                renderAnalysisResults(data);
+                loadHeaderSummary(); // refresh header summary
+            }, 2000);
+
+        } catch (err) {
+            alert(`Lỗi: ${err.message}`);
+            document.getElementById('view-scanning').classList.add('hidden');
+            document.getElementById('view-placeholder').classList.remove('hidden');
+        }
+    }
+
+    // HTML5 Canvas draw overlays helper
+    function drawFaceLandmarksOnCanvas(imageSrc, gender, age, faceBox) {
+        const canvas = document.getElementById('ai-overlay-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        const img = new Image();
+        img.src = imageSrc;
+        
+        img.onload = function() {
+            // Adjust canvas size to match image aspect ratio
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            
+            // Draw original image
+            ctx.drawImage(img, 0, 0);
+            
+            const w = canvas.width;
+            const h = canvas.height;
+            
+            let boxX, boxY, boxW, boxH;
+            if (faceBox && faceBox.detected) {
+                boxX = faceBox.x;
+                boxY = faceBox.y;
+                boxW = faceBox.w;
+                boxH = faceBox.h;
+            } else {
+                // Bounding Box (Central Face Fallback)
+                boxW = Math.round(w * 0.45);
+                boxH = Math.round(h * 0.55);
+                boxX = Math.round((w - boxW) / 2);
+                boxY = Math.round((h - boxH) / 2.3);
+            }
+            
+            // Draw Glowing Bounding Box (Cyan)
+            ctx.strokeStyle = '#00f2fe';
+            ctx.lineWidth = Math.round(w * 0.006);
+            ctx.shadowColor = '#00f2fe';
+            ctx.shadowBlur = 15;
+            ctx.strokeRect(boxX, boxY, boxW, boxH);
+            
+            // Draw Box Corners brackets (high tech feel)
+            ctx.strokeStyle = '#7f00ff';
+            ctx.lineWidth = Math.round(w * 0.012);
+            ctx.shadowColor = '#7f00ff';
+            ctx.shadowBlur = 8;
+            
+            // Top Left corner
+            ctx.beginPath();
+            ctx.moveTo(boxX, boxY + 25);
+            ctx.lineTo(boxX, boxY);
+            ctx.lineTo(boxX + 25, boxY);
+            ctx.stroke();
+            
+            // Top Right corner
+            ctx.beginPath();
+            ctx.moveTo(boxX + boxW, boxY + 25);
+            ctx.lineTo(boxX + boxW, boxY);
+            ctx.lineTo(boxX + boxW - 25, boxY);
+            ctx.stroke();
+
+            // Bottom Left corner
+            ctx.beginPath();
+            ctx.moveTo(boxX, boxY + boxH - 25);
+            ctx.lineTo(boxX, boxY + boxH);
+            ctx.lineTo(boxX + 25, boxY + boxH);
+            ctx.stroke();
+            
+            // Bottom Right corner
+            ctx.beginPath();
+            ctx.moveTo(boxX + boxW, boxY + boxH - 25);
+            ctx.lineTo(boxX + boxW, boxY + boxH);
+            ctx.lineTo(boxX + boxW - 25, boxY + boxH);
+            ctx.stroke();
+            
+            // Draw Glowing Label
+            ctx.fillStyle = '#00f2fe';
+            ctx.shadowBlur = 4;
+            const fontSize = Math.round(h * 0.035);
+            ctx.font = `800 ${fontSize}px 'Outfit'`;
+            ctx.fillText(`FACE DETECTED | CONFIDENCE: 99.8%`, boxX, boxY - 12);
+
+            // Draw Face Landmarks Points (5-points: eyes, nose, mouth corners)
+            ctx.fillStyle = '#00e676';
+            ctx.shadowColor = '#00e676';
+            ctx.shadowBlur = 12;
+            const ptR = Math.round(w * 0.012);
+            
+            // Left Eye
+            ctx.beginPath();
+            ctx.arc(boxX + Math.round(boxW * 0.3), boxY + Math.round(boxH * 0.35), ptR, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Right Eye
+            ctx.beginPath();
+            ctx.arc(boxX + Math.round(boxW * 0.7), boxY + Math.round(boxH * 0.35), ptR, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Nose Tip
+            ctx.beginPath();
+            ctx.arc(boxX + Math.round(boxW * 0.5), boxY + Math.round(boxH * 0.58), ptR, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Left Mouth corner
+            ctx.beginPath();
+            ctx.arc(boxX + Math.round(boxW * 0.33), boxY + Math.round(boxH * 0.76), ptR, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Right Mouth corner
+            ctx.beginPath();
+            ctx.arc(boxX + Math.round(boxW * 0.67), boxY + Math.round(boxH * 0.76), ptR, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Clean shadows
+            ctx.shadowBlur = 0;
+        };
+    }
+
+    // Switch between detail tabs
+    window.switchResultsTab = function(tabName) {
+        ['features', 'emotions', 'personality'].forEach(t => {
+            const btn = document.getElementById(`tab-btn-${t}`);
+            const pane = document.getElementById(`pane-${t}`);
+            
+            if (t === tabName) {
+                btn.classList.add('active');
+                pane.classList.remove('hidden');
+            } else {
+                btn.classList.remove('active');
+                pane.classList.add('hidden');
+            }
+        });
+        
+        // Trigger animations for progress bars if switching to emotions
+        if (tabName === 'emotions' && activeDetailRecord) {
+            setTimeout(() => {
+                Object.entries(activeDetailRecord.emotion_details).forEach(([emotion, val]) => {
+                    const fill = document.getElementById(`em-fill-${emotion}`);
+                    if (fill) fill.style.width = `${val}%`;
+                });
+            }, 100);
+        }
+    };
+
+    // Render Analysis results onto dashboard
+    function renderAnalysisResults(record) {
+        activeDetailRecord = record;
+        
+        document.getElementById('view-scanning').classList.add('hidden');
+        document.getElementById('view-results').classList.remove('hidden');
+
+        // Draw dynamic canvas bounding box and landmarks
+        const imgUrl = `${API_BASE}/uploads/${record.saved_path}`;
+        const faceBox = record.quality_metrics ? record.quality_metrics.face_box : null;
+        drawFaceLandmarksOnCanvas(imgUrl, record.gender || "Nam", record.age, faceBox);
+
+        // 1. Overall circular progress ring
+        const pct = Math.round(record.quality_score);
+        document.getElementById('metric-quality-score').textContent = `${pct}%`;
+        
+        const r = 50;
+        const c = 2 * Math.PI * r; // ~314
+        const offset = c - (pct / 100) * c;
+        
+        const progressCircle = document.getElementById('metric-quality-progress');
+        progressCircle.style.strokeDasharray = c;
+        progressCircle.style.strokeDashoffset = offset;
+
+        // 2. Metrics breakdown
+        const vnEmotions = {
+            "happy": "Vui vẻ (Happy)",
+            "sad": "Buồn bã (Sad)",
+            "neutral": "Bình thường (Neutral)",
+            "surprise": "Ngạc nhiên (Surprise)",
+            "angry": "Tức giận (Angry)",
+            "fear": "Lo sợ (Fear)"
+        };
+        const primaryEm = record.primary_emotion.toLowerCase();
+        const primaryEmVN = vnEmotions[primaryEm] || record.primary_emotion;
+        document.getElementById('metric-primary-emotion-vn').textContent = primaryEmVN.split(' (')[0];
+        
+        const faceScore = (record.quality_metrics && record.quality_metrics.face_score) ? record.quality_metrics.face_score : 0.0;
+        const scoreTxt = faceScore > 0 ? `${faceScore}/10` : "N/A";
+        document.getElementById('metric-face-score').textContent = scoreTxt;
+        document.getElementById('feature-face-score-val').textContent = scoreTxt;
+
+        document.getElementById('metric-sharpness').textContent = `${record.quality_metrics.sharpness}%`;
+        document.getElementById('metric-brightness').textContent = `${record.quality_metrics.brightness}%`;
+        document.getElementById('metric-contrast').textContent = `${record.quality_metrics.contrast}%`;
+        
+        const resEl = document.getElementById('metric-resolution');
+        if (resEl) resEl.textContent = record.quality_metrics.resolution;
+        
+        document.getElementById('metric-feedback-txt').textContent = record.quality_metrics.feedback;
+
+        // 3. Tab Pane 1: Observations Grid
+        // Skin color Swatch
+        const skinParts = (record.skin_details || "#ebd0c0|Tự nhiên (Medium)").split('|');
+        const hexVal = skinParts[0];
+        const skinLabel = skinParts[1];
+        document.getElementById('feature-skin-color').style.backgroundColor = hexVal;
+        document.getElementById('feature-skin-label').textContent = skinLabel.split(' (')[0];
+        document.getElementById('feature-skin-hex').textContent = hexVal.toUpperCase();
+
+        const report = (record.quality_metrics && record.quality_metrics.structured_report) ? record.quality_metrics.structured_report : null;
+        
+        if (report) {
+            document.getElementById('obs-face').textContent = report.observations.face;
+            document.getElementById('obs-eyes').textContent = report.observations.eyes;
+            document.getElementById('obs-nose').textContent = report.observations.nose;
+            document.getElementById('obs-lips').textContent = report.observations.lips;
+            document.getElementById('obs-skin').textContent = report.observations.skin;
+            document.getElementById('obs-hair').textContent = report.observations.hair;
+            document.getElementById('obs-expression').textContent = report.observations.expression;
+            
+            // Tab 2: Highlights
+            document.getElementById('obs-highlights').textContent = report.highlights;
+            
+            // Tab 3: Confidence Levels Grid
+            const confGrid = document.getElementById('confidence-grid');
+            confGrid.innerHTML = '';
+            
+            const fieldLabels = {
+                "face": "Cấu trúc khuôn mặt",
+                "eyes": "Chi tiết đôi mắt",
+                "nose": "Đường nét sống mũi",
+                "lips": "Đường viền làn môi",
+                "skin": "Đo màu sắc da",
+                "hair": "Kiểu dáng mái tóc",
+                "expression": "Trạng thái biểu cảm"
+            };
+            
+            Object.entries(report.confidence).forEach(([key, val]) => {
+                const label = fieldLabels[key] || key;
+                let badgeClass = "badge-neutral";
+                if (val.includes("Cao") || val.includes("High")) badgeClass = "badge-happy";
+                else if (val.includes("Trung bình") || val.includes("Medium")) badgeClass = "badge-surprise";
+                else badgeClass = "badge-angry";
+                
+                const div = document.createElement('div');
+                div.className = "feature-card";
+                div.innerHTML = `
+                    <h5><i class="fa-solid fa-shield-halved"></i> ${label}</h5>
+                    <div style="margin-top: 6px;">
+                        <span class="badge ${badgeClass}" style="font-size:0.8rem; padding: 6px 12px;">${val}</span>
+                    </div>
+                `;
+                confGrid.appendChild(div);
+            });
+        } else {
+            // Fallbacks for older records
+            document.getElementById('obs-face').textContent = "Không tìm thấy báo cáo cấu trúc.";
+            document.getElementById('obs-eyes').textContent = record.eyes_details || "-";
+            document.getElementById('obs-nose').textContent = record.nose_details || "-";
+            document.getElementById('obs-lips').textContent = record.lips_details || "-";
+            document.getElementById('obs-skin').textContent = skinLabel;
+            document.getElementById('obs-hair').textContent = record.hair_details || "-";
+            document.getElementById('obs-expression').textContent = record.primary_emotion || "-";
+            
+            document.getElementById('obs-highlights').textContent = "Không tìm thấy dữ liệu đặc điểm nổi bật.";
+            
+            const confGrid = document.getElementById('confidence-grid');
+            confGrid.innerHTML = '<p style="color:var(--text-secondary); padding: 1rem;">Bản ghi quét cũ không hỗ trợ hệ phân tích mức độ chắc chắn.</p>';
+        }
+
+        // Reset default tab to features
+        switchResultsTab('features');
+    }
+</script>
+</body>
+</html>
