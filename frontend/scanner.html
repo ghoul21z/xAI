@@ -1072,5 +1072,112 @@
         switchResultsTab('features');
     }
 </script>
+
+<!-- Real-time Active Visitor Heartbeat & Admin Counter (Invisible to standard users) -->
+<script>
+(function() {
+    // Generate or retrieve persistent Session Client ID
+    let clientId = sessionStorage.getItem('xai_client_id');
+    if (!clientId) {
+        clientId = 'client_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        sessionStorage.setItem('xai_client_id', clientId);
+    }
+
+    // Determine current API Base URL
+    const apiBase = window.location.origin;
+
+    // Send periodic heartbeat to backend
+    async function sendHeartbeat() {
+        try {
+            await fetch(`${apiBase}/api/visitor/heartbeat?client_id=${clientId}`, {
+                method: 'POST'
+            });
+        } catch (e) {
+            // Silently ignore connection errors
+        }
+    }
+
+    // Heartbeat loop every 10 seconds
+    sendHeartbeat();
+    setInterval(sendHeartbeat, 10000);
+
+    // Admin view management
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('admin') === 'true') {
+        localStorage.setItem('xai_admin', 'true');
+    } else if (urlParams.get('admin') === 'false') {
+        localStorage.removeItem('xai_admin');
+    }
+
+    // If admin mode is active, render the floating real-time visitor counter badge
+    if (localStorage.getItem('xai_admin') === 'true') {
+        // Create Admin Container overlay
+        const adminBadge = document.createElement('div');
+        adminBadge.id = 'xai-admin-visitor-badge';
+        
+        // Premium HSL Glassmorphism Styles matching the dashboard theme
+        Object.assign(adminBadge.style, {
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            zIndex: '9999',
+            background: 'rgba(15, 12, 30, 0.85)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(0, 242, 254, 0.4)',
+            borderRadius: '12px',
+            padding: '12px 18px',
+            boxShadow: '0 0 15px rgba(0, 242, 254, 0.25)',
+            fontFamily: "'Outfit', 'Inter', sans-serif",
+            color: '#ffffff',
+            fontSize: '0.85rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            transition: 'all 0.3s ease',
+            pointerEvents: 'auto',
+            letterSpacing: '0.5px'
+        });
+
+        adminBadge.innerHTML = `
+            <span style="display:inline-block; width:8px; height:8px; background:#00f2fe; border-radius:50%; box-shadow:0 0 8px #00f2fe; animation: xai-pulse 1.5s infinite;"></span>
+            <span style="font-weight:600; color:#00f2fe;">ADMIN LIVE:</span>
+            <span id="xai-active-count-value" style="font-weight:700;">1</span> NGƯỜI ONLINE
+        `;
+
+        // Inject heartbeat pulse animation
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = `
+            @keyframes xai-pulse {
+                0% { transform: scale(0.9); opacity: 0.6; }
+                50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #00f2fe; }
+                100% { transform: scale(0.9); opacity: 0.6; }
+            }
+            #xai-admin-visitor-badge:hover {
+                box-shadow: 0 0 20px rgba(127, 0, 255, 0.5);
+                border-color: rgba(127, 0, 255, 0.6);
+            }
+        `;
+        document.head.appendChild(styleSheet);
+        document.body.appendChild(adminBadge);
+
+        // Fetch active visitor count from backend
+        async function fetchActiveCount() {
+            try {
+                const res = await fetch(`${apiBase}/api/admin/active-visitors?secret=xai_admin_secret_99`);
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('xai-active-count-value').textContent = data.active_count;
+                }
+            } catch (err) {
+                // Silently ignore admin fetch errors
+            }
+        }
+
+        // Fetch loop every 10 seconds
+        fetchActiveCount();
+        setInterval(fetchActiveCount, 10000);
+    }
+})();
+</script>
 </body>
 </html>

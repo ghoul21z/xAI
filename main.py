@@ -48,7 +48,7 @@ print("=============================================================")
 
 
 
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -99,11 +99,39 @@ app.include_router(scanner.router)
 app.include_router(history.router)
 app.include_router(analytics.router)
 
+# Real-time Active Visitor Tracker State
+ACTIVE_VISITORS = {}  # client_id -> last_seen_timestamp
+
+@app.post("/api/visitor/heartbeat")
+def visitor_heartbeat(client_id: str = Query(...)):
+    """Receives a heartbeat ping from an active frontend client."""
+    import time
+    ACTIVE_VISITORS[client_id] = time.time()
+    return {"status": "ok"}
+
+@app.get("/api/admin/active-visitors")
+def get_active_visitors(secret: str = Query(None)):
+    """Gets the count of active visitors. Protected by a simple secret key."""
+    import time
+    now = time.time()
+    # Clean up expired visitor sessions (older than 25 seconds)
+    expired = [cid for cid, t in ACTIVE_VISITORS.items() if now - t > 25]
+    for cid in expired:
+        ACTIVE_VISITORS.pop(cid, None)
+        
+    # Secret protection check
+    if secret != "xai_admin_secret_99":
+        raise HTTPException(status_code=403, detail="Unauthorized")
+        
+    return {"active_count": len(ACTIVE_VISITORS)}
+
+
 # Expose global DB status check
 @app.get("/api/db-status", response_model=DatabaseStatusResponse)
 def db_status():
     """Get status of active PostgreSQL database / SQLite fallback."""
     return get_db_status()
+
 
 
 # ==========================================================================
